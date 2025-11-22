@@ -1,2 +1,2 @@
 FROM busybox:1.37.0
-CMD ["echo", " Hello, World!"]
+CMD ["echo", "Hello, World!"]
