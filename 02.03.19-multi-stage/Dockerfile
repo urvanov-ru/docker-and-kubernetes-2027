@@ -10,5 +10,4 @@ RUN ls -la /usr/local/tomcat/webapps/
 COPY --from=builder \
   /simple-spring-webmvc/target/simple-spring-webmvc-0.0.1-SNAPSHOT.war \
   /usr/local/tomcat/webapps/ROOT.war
-EXPOSE 8080
 
