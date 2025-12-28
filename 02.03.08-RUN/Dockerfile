@@ -1,4 +1,5 @@
 FROM busybox:1.37.0
+RUN echo Hello, world
 RUN ["echo", "Hello, world"]
 RUN ["ls"]
 
