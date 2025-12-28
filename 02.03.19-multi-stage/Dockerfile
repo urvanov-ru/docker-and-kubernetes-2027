@@ -2,8 +2,8 @@ FROM maven:3.9.12-eclipse-temurin-17-alpine AS builder
 ADD https://github.com/urvanov-ru/simple-spring-webmvc.git \
   simple-spring-webmvc
 WORKDIR /simple-spring-webmvc
-RUN ls -la /usr/bin/mvn
-RUN /usr/bin/mvn clean package
+RUN --mount=type=cache,id=maven-cache,target=/root/.m2 \
+ /usr/bin/mvn clean package
 
 FROM tomcat:10.1.50-jdk17-temurin-jammy
 RUN ls -la /usr/local/tomcat/webapps/
