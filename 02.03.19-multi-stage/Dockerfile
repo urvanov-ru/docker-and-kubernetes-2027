@@ -6,7 +6,6 @@ RUN --mount=type=cache,id=maven-cache,target=/root/.m2 \
  /usr/bin/mvn clean package
 
 FROM tomcat:10.1.50-jdk17-temurin-jammy
-RUN ls -la /usr/local/tomcat/webapps/
 COPY --from=builder \
   /simple-spring-webmvc/target/simple-spring-webmvc-0.0.1-SNAPSHOT.war \
   /usr/local/tomcat/webapps/ROOT.war
