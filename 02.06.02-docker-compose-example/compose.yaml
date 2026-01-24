@@ -1,9 +1,9 @@
 services:
-  mariadb:
+  db:
     image: mariadb:12.1.2-noble
+  frontend:
+    image: nginx:1.29.4-alpine3.23
   redis:
     image: redis:8.4.0-alpine3.22
-  nginx:
-    image: nginx:1.29.4-alpine3.23
   kafka:
     image: apache/kafka:4.1.1
