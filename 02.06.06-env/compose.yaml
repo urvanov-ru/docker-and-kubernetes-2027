@@ -13,7 +13,6 @@ services:
     environment:
       # Значения переопределяют значения из.env файла.
       MARIADB_DATABASE: my_database
-      MARIADB_PASSWORD: 123
       OTHER_ENVIRONMENT_VARIABLE: "some value"
   frontend:
     image: nginx:1.29.4-alpine3.23
@@ -23,7 +22,7 @@ services:
       - "8085:80"
     env_file:
       - path: ./other.env
-      - required: false
+        required: false
   redis:
     image: redis:8.4.0-alpine3.22
     ports:
