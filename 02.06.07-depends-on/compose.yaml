@@ -32,14 +32,20 @@ services:
       - "8086:80"
     depends_on:
       db:
+        # Должен выполняться healthcheck.
         condition: service_healthy
+        # Перезапускать backend2 при перезапуске db.
         restart: true
       redis:
+        # Сервиса должен быть запущен.
         condition: service_started
+        # Redis не обязателен.
         required: false
       kafka:
+        # Сервис должен быть запущен.
         condition: service_started
       hello:
+        # Сервис hello должен быть завершен успешно.
         condition: service_completed_successfully
   hello:
     image: hello-world:latest
@@ -54,17 +60,5 @@ services:
       # Проброс портов 9092 и 9093 из контейнера Kafka.
       - "9092:9092"
       - "9093:9093"
-    environment:
-      KAFKA_NODE_ID: 1
-      KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_LISTENERS: PLAINTEXT://localhost:9092,CONTROLLER://localhost:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_NUM_PARTITIONS: 3
+
 
