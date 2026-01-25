@@ -14,7 +14,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-  frontend:
+  backend1:
     image: nginx:1.29.4-alpine3.23
     ports:
       # Проброс порта 80 из контейнера Nginx
@@ -24,7 +24,7 @@ services:
       - db
       - redis
       - kafka
-  superfrontend:
+  backend2:
     image: nginx:1.29.4-alpine3.23
     ports:
       # Проброс порта 80 из контейнера Nginx
