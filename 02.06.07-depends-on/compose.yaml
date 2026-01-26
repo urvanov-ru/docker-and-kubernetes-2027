@@ -5,8 +5,6 @@ services:
       # Проброс порта 3306 из контейнера MariaDB.
       - "3306:3306"
     env_file:
-      # Переменные окружения считываются из файлов
-      # в порядке перечисления файлов.
       - dev.env
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect",
