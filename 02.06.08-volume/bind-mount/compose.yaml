@@ -1,13 +1,4 @@
 services:
-  db:
-    image: mariadb:12.1.2-noble
-    ports:
-      # Проброс порта 3306 из контейнера MariaDB.
-      - "3306:3306"
-    env_file:
-      - dev.env
-    volumes:
-      - db_data:/var/lib/mysql
   nginx:
     image: nginx:1.29.4-alpine3.23
     ports:
@@ -16,6 +7,3 @@ services:
       - "8080:80"
     volumes:
       - ./website:/usr/share/nginx/html
-volumes:
-  db_data:
-
