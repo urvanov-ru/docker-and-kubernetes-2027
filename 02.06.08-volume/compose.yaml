@@ -8,17 +8,14 @@ services:
       - dev.env
     volumes:
       - db_data:/var/lib/mysql
-  redis:
-    image: redis:8.4.0-alpine3.22
+  nginx:
+    image: nginx:1.29.4-alpine3.23
     ports:
-      # Проброс порта 6379 из контейнера Redis.
-      - "6379:6379"
-  kafka:
-    image: apache/kafka:4.1.1
-    ports:
-      # Проброс портов 9092 и 9093 из контейнера Kafka.
-      - "9092:9092"
-      - "9093:9093"
+      # Проброс порта 80 из контейнера Nginx
+      # на порт 8080 хоста.
+      - "8080:80"
+    volumes:
+      - ./website:/usr/share/nginx/html
 volumes:
   db_data:
 
