@@ -1,15 +1,24 @@
 services:
-  nginx:
+  httpd:
+    # Используем образ Apache HTTP Server версии 2.4.65
     image: httpd:2.4.65
     ports:
       # Проброс порта 80 из контейнера Nginx
       # на порт 8080 хоста.
       - "8080:80"
     volumes:
+      # SHTML-файлы сайта.
       - ./public-html:/usr/local/apache2/htdocs/
     configs:
-      - source: ssi_config
+      # Имя конфига из корневого элемента configs.
+      - source: ssi_config 
+      # Путь к конфигурационному файлу Nginx.
         target: /usr/local/apache2/conf/httpd.conf
+# Корневой элемент configs, содержащий конфигурационные файлы
+# использующиеся сервисами.
 configs:
+  # Описание конфигурационных файлов.
+  # ключ - имя конфига. 
   ssi_config:
+    # Путь к конфигурационному файлу Nginx.
     file: ./ssi-enabled-httpd.conf
