@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta name = "viewport" content = "width=device-width, initial-scale=1" >
+  <meta charset = "utf-8" >
+  <title>SSI example</title>
+  <meta name = "author" content = "Урванов Федор Владиславович">
+  <meta name = "keywords" content = "SSI, Server Side Includes, пример">
+  <meta name = "description" content = "Пример страниц с использованием Server Side Includes для книги про Docker и Kubernetes">
+  <meta property = "og:description" content = "Пример страниц с использованием Server Side Includes для книги про Docker и Kubernetes">
+  <meta property = "og:type" content="website">
+  <meta property = "og:url"
+    content = "https://urvanov.ru/projects/websites/ssi-example">
+  <meta name="og:image" content="https://urvanov.ru/favicon120.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!--#include virtual="/header.shtml" -->
+  <!--#include virtual="/menu.shtml" -->
+  <article>
+  <p>
+   Страница сгенерирована <!--#echo var="DATE_LOCAL" -->.
+  </p>
+  <p>
+  Пример используется книгой <a href = "https://urvanov.ru/%d0%ba%d0%bd%d0%b8%d0%b3%d0%b8/docker-%d0%b8-kubernetes-2027/">Docker и Kubernetes. База по работе с контейнерами (2027)</a>.
+  </p>
+  <p>
+  Этот документ последний раз редактировался <!--#flastmod file="index.shtml" -->.
+  </p>
+  </article>
+  <!--#include virtual="/footer.shtml" --> 
+</body>
+</html>

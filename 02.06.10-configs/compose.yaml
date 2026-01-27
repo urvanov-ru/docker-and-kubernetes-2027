@@ -1,0 +1,15 @@
+services:
+  nginx:
+    image: httpd:2.4.65
+    ports:
+      # Проброс порта 80 из контейнера Nginx
+      # на порт 8080 хоста.
+      - "8080:80"
+    volumes:
+      - ./public-html:/usr/local/apache2/htdocs/
+    configs:
+      - source: ssi_config
+        target: /usr/local/apache2/conf/httpd.conf
+configs:
+  ssi_config:
+    file: ./ssi-enabled-httpd.conf
