@@ -21,4 +21,7 @@ configs:
   # ключ - имя конфига. 
   ssi_config:
     # Путь к конфигурационному файлу Nginx.
+    # Конфигурационный файл ssi-enabled-httpd.conf находится
+    # в том же каталоге, что и compose.yaml.
+    # Он содержит настройки включения SSI в Apache HTTP Server.
     file: ./ssi-enabled-httpd.conf
