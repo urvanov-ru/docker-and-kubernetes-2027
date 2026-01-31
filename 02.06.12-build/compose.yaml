@@ -1,0 +1,5 @@
+services:
+  simple-spring-webmvc:
+    build: ../02.03.19-multi-stage
+    ports:
+      - "8080:8080"
