@@ -1,0 +1,27 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../frontend.Dockerfile
+    ports:
+     - 8081:80
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/dist
+          target: /usr/share/nginx/html
+        - action: rebuild
+          path: frontend/src
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../backend.Dockerfile
+    ports:
+     - 8081:80
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/dist
+          target: /usr/share/nginx/html
+        - action: rebuild
+          path: frontend/src
