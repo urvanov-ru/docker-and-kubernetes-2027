@@ -1,55 +1,135 @@
+# Пример использования develop/watch для облегчения разработки
+# приложения с помощью Docker Compose.
+# После запуска:
+# http://localhost:8081 - клиентская часть игры.
+# http://localhost:8080 - серверная часть игры.
+# http://localhost:8080/site/home - публичный сайт игры. 
 services:
+  # Клиентская часть на JavaScript
   frontend:
+    # Образ собирается из исходного кода
     build:
+      # Контекст сборки в каталоге frontend,
+      # куда предварительно нужно выкачать все исходные коды
+      # из https://github.com/urvanov-ru/virtualpets-client-js.git
       context: ./frontend
+      # Dockerfile у нас свой, в исходных кодах клиентской
+      # части его нет.
       dockerfile: ../frontend.Dockerfile
+    # Пробрасываем порт 80 из контейнера на порт 8081 хоста.
     ports:
      - 8081:80
+    # Настраиваем синхронизацию файлов в контейнере
+    # с файлами исходных кодов на хосте.
     develop:
       watch:
-        - action: sync
-          path: frontend/dist
+
+        # Обновление статических файлов клиента в контейнере.
+        - path: frontend
+          # Только файлы, удовлетворяющие паттерну из атрибута
+          # include будут синхронизироватся.
+          include: 
+            - index.html
+            - manifest.json
+            - style.css
+          # Указываем, что необходимо синхронизировать
+          # в каталоге хоста и в контейнере.
+          action: sync 
+          # Каталог со статическими файлами nginx в контейнере.
           target: /usr/share/nginx/html
-        - action: rebuild
-          path: frontend/src
+          
+        # При изменении файлов в каталоге с исходными кодами
+        # клиентской части необходимо пересобрать клиент.
+        # Автоматическая пересборка упростит разработку игры.
+        - path: frontend/src
+          # Запуск пересборки.
+          action: rebuild
+        
+        # Синхронизация конфигурационного файла nginx.
+        # При этом необходимо принудительно указать Nginx,
+        # чтобы он перечитал конфигурационный файл. 
         - action: sync+exec
+          # Файл nginx.conf на хосте находится в том же каталоге,
+          # что и compose.yaml.
           path: nginx.conf
+          # Путь к nginx.conf в контейнере.
           target: /etc/nginx/nginx.conf
+          # При обновлении конфигурационного файла Nginx
+          # необходимо указать Nginx, чтобы он перечитал
+          # конфигурацию.
           exec:
+            # Команда перечитывание конфигурации Nginx.
             command: nginx -s reload
+
+        # Синхронизация конфигурационного файла nginx.
         - action: sync+exec
+        # Файл default.conf на хосте находится в том же каталоге,
+        # что и compose.yaml.
           path: default.conf
+          # Путь к default.conf в контейнере.
           target: /etc/nginx/conf.d/default.conf
+          # При обновлении конфигурационного файла Nginx
+          # необходимо указать Nginx, чтобы он перечитал
+          # конфигурацию.
           exec:
+            # Команда перечитывание конфигурации Nginx.
             command: nginx -s reload
+
+  # Серверная часть игры с виртуальными питомцами.
   backend:
+    # Образ собирается из исходного кода в каталоге backend,
     build:
+      # Каталог с контекстом.
       context: ./backend
+      # Dockerfile у нас свой, в исходных кодах серверной
+      # части его нет.
       dockerfile: ../backend.Dockerfile
+    # Пробрасываем порт 8080 из контейнера на порт 8080 хоста.
     ports:
      - 8080:8080
+    # Сервис с серверной частью зависит от сервиса с базой данных.
     depends_on:
       - db
+    # Настройка пересборки серверной части при изменении исходных
+    # кодов.
     develop:
       watch:
-        - action: rebuild
-          path: backend
+        # Исходные коды серверной части расположены в каталоге
+        # backend. При любом изменении в них запускается пересборка.
+        - path: backend
+          action: rebuild
+
+  # Сервис базы данных PostgreSQL.
   db:
+    # Образ не собирается, используется существующий.
+    # Образ PostgreSQL с версией 18.1, архитектурой Alpine,
     image: postgres:18.1-alpine3.23
+    # Проброс порта 5432 из контейнера на порт 5433 хоста.
     ports:
       - "5433:5432"
+    # Тома с данными базы PostgreSQL на хосте.
     volumes:
+      # SQL-скрипт для создании базы.
+      # Необходимо создать схему в базе данных. Остальную часть
+      # Liquibase создаст сам.
       - ./backend/docker//init.sql:/docker-entrypoint-initdb.d/init.sql
+      # Том с данными для хранения данных на хосте вне
+      # жизненного цикла контейнера.
       - postgres_data:/var/lib/postgresql
+    # Переменные окружения.
     environment:
+      # Пароль базы данных из секрета.
       POSTGRES_PASSWORD_FILE : /run/secrets/db_password 
-      POSTGRES_USER : postgres
+    # Секрет с паролем базы данных PostgreSQL.
     secrets:
       - db_password
 
+# Том с данными базы данных PostgreSQL. 
 volumes:
   postgres_data:
 
+# Секрет с паролем базы данных PostgreSQL.
 secrets:
   db_password:
+    # Секрет хранится в файле.
     file: db_password.txt
