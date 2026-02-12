@@ -2,7 +2,7 @@
 # Используется специальный образ для сборки проекта,
 # содержащий в себе Maven и OpenJDK 17 Temurin на основе Alpine Linux.
 FROM maven:3.9.12-eclipse-temurin-17-alpine AS builder
-# Выкачиваение исходного кода проекта из репозитория GitHub.
+# Копирование исходного кода в контейнер.
 COPY . /virtualpets-server-springboot
 # Смена рабочего каталога на каталог с исходным кодом.
 WORKDIR /virtualpets-server-springboot
