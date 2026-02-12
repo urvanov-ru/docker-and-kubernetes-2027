@@ -9,7 +9,11 @@ WORKDIR /virtualpets-server-springboot
 # Сборка с использованием кеша для выкачиваемых
 # артефактов Maven.
 RUN --mount=type=cache,id=maven-cache,target=/root/.m2 \
- /usr/bin/mvn clean package '-DskipTests' spring-boot:repackage -Dspring-boot:repackage:mainClass=ru.urvanov.virtualpets.server.Application -Dspring-boot:repackage:classifier=target/virtualpets-server-springboot-3.3.2.jar
+/usr/bin/mvn clean package '-DskipTests' spring-boot:repackage \
+-Dspring-boot:repackage:mainClass=ru.urvanov.virtualpets.server\
+.Application \
+-Dspring-boot:repackage:classifier=\
+target/virtualpets-server-springboot-3.3.2.jar
 
 # Второй этап. 
 # В качестве базового образа используется образ
@@ -18,7 +22,9 @@ FROM eclipse-temurin:17.0.18_8-jre-alpine-3.23
 # Результат первого этапа (builder) разворачивается
 # в Apache Tomcat.
 COPY --from=builder \
- /virtualpets-server-springboot/target/virtualpets-server-springboot-3.3.2.jar \
- /virtualpets-server-springboot.jar
+/virtualpets-server-springboot/target/\
+virtualpets-server-springboot-3.3.2.jar \
+/virtualpets-server-springboot.jar
 
-ENTRYPOINT ["java", "-jar", "/virtualpets-server-springboot.jar", "--spring.datasource.url=jdbc:postgresql://db:5432/postgres" ]
+ENTRYPOINT ["java", "-jar", "/virtualpets-server-springboot.jar", \
+"--spring.datasource.url=jdbc:postgresql://db:5432/postgres" ]
