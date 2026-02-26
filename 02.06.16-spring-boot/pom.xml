@@ -8,11 +8,11 @@
         <version>4.0.3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>ru.urvanov.javaexamples</groupId>
+    <groupId>ru.urvanov.dockerandkubernetes2027</groupId>
     <artifactId>spring-docker-compose</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>spring-docker-compose</name>
-    <description>Пример интегации Docker Compose с Spring Boot с помощью spring-boot-docker-compose.</description>
+    <description>Пример интеграции Docker Compose с Spring Boot с помощью spring-boot-docker-compose.</description>
     <url/>
     <licenses>
         <license/>
@@ -46,6 +46,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-zipkin</artifactId>
         </dependency>
+
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-tracing-bridge-brave</artifactId>
@@ -62,6 +63,12 @@
             <artifactId>micrometer-registry-prometheus</artifactId>
             <scope>runtime</scope>
         </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
