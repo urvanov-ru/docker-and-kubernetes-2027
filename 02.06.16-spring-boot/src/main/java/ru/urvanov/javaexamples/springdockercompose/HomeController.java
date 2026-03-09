@@ -27,12 +27,14 @@ public class HomeController {
     @GetMapping("/")
     public String home() {
         logger.info("Received GET request at /");
-        return jdbcTemplate.<String>query("SELECT column1 from table1", (rs) -> {
-            if (rs.next()) {
-                return rs.getString(1);
-            } else {
-                return "No data found";
-            }
+        return jdbcTemplate.<String>query(
+                "SELECT column1 from table1",
+                (rs) -> {
+                        if (rs.next()) {
+                            return rs.getString(1);
+                        } else {
+                            return "No data found";
+                        }
         });
     }
 
