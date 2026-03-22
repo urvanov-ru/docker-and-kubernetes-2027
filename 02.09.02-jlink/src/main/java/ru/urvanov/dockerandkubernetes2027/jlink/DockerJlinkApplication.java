@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 @RestController
-public class JavaexamplesJlinkApplication {
+public class DockerJlinkApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(JavaexamplesJlinkApplication.class, args);
+        SpringApplication.run(DockerJlinkApplication.class, args);
     }
     
     @GetMapping("/")
