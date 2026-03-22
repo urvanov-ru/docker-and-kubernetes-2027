@@ -33,5 +33,3 @@ EXPOSE 8080
 
 # Команда запуска сервиса.
 ENTRYPOINT ["java","-jar","/opt/docker-jlink/app.jar"]
-
-#
