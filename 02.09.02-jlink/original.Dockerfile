@@ -1,7 +1,7 @@
 # Этап 1.
-# Базовый образ с Java 17, в котором будет осуществляться
+# Базовый образ с JDK 25, в котором будет осуществляться
 # сборка проекта.
-FROM eclipse-temurin:17.0.18_8-jdk-alpine-3.23 AS jre_builder
+FROM eclipse-temurin:25.0.2_10-jdk-alpine-3.23 AS builder
 
 # Копирование исходных кодов в контейнер для сборки.
 COPY . /docker-jlink
@@ -20,11 +20,12 @@ COPY target/docker-jlink-0.0.1-SNAPSHOT.jar /app.jar
 
 
 # Этап 2.
-# Новый чистый базовый образ для развёртывания сервиса.
-FROM eclipse-temurin:17.0.18_8-jdk-alpine-3.23
+# Новый чистый базовый образ с JRE 25
+# для развёртывания сервиса.
+FROM eclipse-temurin:25.0.2_10-jre-alpine-3.23
 
 # Забираем результат сборки из этапа сборки.
-COPY --from=jre_builder \
+COPY --from=builder \
   /app.jar /opt/docker-jlink/app.jar
 
 # Просто указываем в качестве документации,
