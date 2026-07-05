@@ -11,7 +11,8 @@ LABEL ru.urvanov.email="fedor@urvanov.ru"
 # Метка с версией образа.
 LABEL ru.urvanov.version=0.1
 # Метка образа с описанием. 
-LABEL ru.urvanov.description="A simple Docker image with a single command"
+LABEL ru.urvanov.description=\
+"A simple Docker image with a single command"
 # Просто своя дополнительная метка для личных нужд. Здесь
 # она только для демонстрации экранирования пробелов с 
 # помощью обратной косой черты.
