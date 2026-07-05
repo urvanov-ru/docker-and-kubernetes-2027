@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # Наименование Deployment
+  name: welcome-to-docker
+spec:
+  # Должно существовать три пода.
+  replicas: 3
+  selector:
+    matchLabels:
+        app: welcome-to-docker
+        app.kubernetes.io/name: welcome-to-docker 
+  template:
+    metadata:
+      labels:
+        # Apply this label to pods and default
+        # the Deployment label selector to this value
+        app: welcome-to-docker
+        app.kubernetes.io/name: welcome-to-docker 
+    spec:
+      containers:
+      - name: welcome-to-docker
+        # Run this image
+        image: docker/welcome-to-docker
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: welcome-to-docker-service
+spec:
+  type: NodePort
+  selector:
+    app: welcome-to-docker
+    app.kubernetes.io/name: welcome-to-docker 
+  ports:
+    - protocol: TCP
+      port: 80
