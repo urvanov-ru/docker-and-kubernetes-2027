@@ -1,4 +1,5 @@
 apiVersion: apps/v1
+# Тип ресурса.
 kind: Deployment
 metadata:
   # Наименование Deployment
@@ -6,6 +7,8 @@ metadata:
 spec:
   # Должно существовать три пода.
   replicas: 3
+  # Селектор описывает, какими подами будет управлять создаваемый
+  # ReplicaSet.
   selector:
     matchLabels:
         app: welcome-to-docker
@@ -13,25 +16,35 @@ spec:
   template:
     metadata:
       labels:
-        # Apply this label to pods and default
-        # the Deployment label selector to this value
+        # Метки для созданных подов.
+        # По этим меткам можно будет обращаться к
+        # подам.
         app: welcome-to-docker
         app.kubernetes.io/name: welcome-to-docker 
     spec:
+      # Контейнеры для пода
       containers:
+      # В нашем поде только один контейнер welcome-to-docker.
       - name: welcome-to-docker
-        # Run this image
+        # Образ для создания контейнеров.
         image: docker/welcome-to-docker
 ---
 apiVersion: v1
+# Тип ресурса.
+# Сервис необходим для обращения к развёрнутым
+# в подах контейнерам с балансировкой нагрузки.
 kind: Service
 metadata:
+  # Наименование сервиса
   name: welcome-to-docker-service
 spec:
   type: NodePort
   selector:
+    # Сервис создаётся для подос со следующими
+    # метками.
     app: welcome-to-docker
     app.kubernetes.io/name: welcome-to-docker 
   ports:
     - protocol: TCP
+      # Сервис подключается к порту 80 подов.
       port: 80
