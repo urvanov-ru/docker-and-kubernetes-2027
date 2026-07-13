@@ -4,6 +4,10 @@ kind: Deployment
 metadata:
   # Наименование Deployment
   name: welcome-to-docker
+  # Метки для самого Deployment
+  labels:
+    app.kubernetes.io/name: welcome-to-docker
+    docker-and-kubernetes-2027.urvanov.ru/customlabel: my-custom-label
 spec:
   # Должно существовать три пода.
   replicas: 3
@@ -11,7 +15,6 @@ spec:
   # ReplicaSet.
   selector:
     matchLabels:
-        app: welcome-to-docker
         app.kubernetes.io/name: welcome-to-docker 
   template:
     metadata:
@@ -19,7 +22,6 @@ spec:
         # Метки для созданных подов.
         # По этим меткам можно будет обращаться к
         # подам.
-        app: welcome-to-docker
         app.kubernetes.io/name: welcome-to-docker 
     spec:
       # Контейнеры для пода
@@ -42,7 +44,6 @@ spec:
   selector:
     # Сервис создаётся для подос со следующими
     # метками.
-    app: welcome-to-docker
     app.kubernetes.io/name: welcome-to-docker 
   ports:
     - protocol: TCP
