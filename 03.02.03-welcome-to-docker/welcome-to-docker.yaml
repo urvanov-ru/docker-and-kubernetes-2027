@@ -46,6 +46,5 @@ spec:
     # метками.
     app.kubernetes.io/name: welcome-to-docker 
   ports:
-    - protocol: TCP
-      # Сервис подключается к порту 80 подов.
-      port: 80
+    # Сервис подключается к порту 80 подов.
+    - port: 80
