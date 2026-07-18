@@ -3,7 +3,7 @@ FROM golang:1.26.4-alpine3.24 AS builder
 
 WORKDIR /usr/src/app
 
-# pre-copy/cache go.mod for pre-downloading dependencies and only redownloading them in subsequent builds if they change
+# Копируем текст программы в образ.
 COPY pow-golang.go ./
 
 # Сборка приложения.
