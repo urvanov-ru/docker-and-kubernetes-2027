@@ -28,6 +28,7 @@ func pow(w http.ResponseWriter, r *http.Request) {
 
 
 func main() {
+    fmt.Println("Usage example: http://localhost:8087?base=2&exponent=3")
     http.HandleFunc("/", pow)
     http.ListenAndServe(":8087", nil)
 }
