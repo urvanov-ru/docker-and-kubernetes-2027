@@ -1,23 +1,34 @@
+# Версия API.
 apiVersion: apps/v1
+# Тип ресурса Deployment. В этом YAML-файле
+# Описывается именно Deployment.
 kind: Deployment
 metadata:
-  # Unique key of the Deployment instance
+  # Наименование Deployment
   name: pow-golang
 spec:
-  # 3 Pods should exist at all times.
-  replicas: 3
+  # Два одновременно работающих пода.
+  replicas: 2
+  # Поды для управления выбираются по стандартной 
+  # стандартной метке наименования pow-golang.
   selector:
     matchLabels:
-        app: pow-golang
+        app.kubernetes.io/name: pow-golang
   template:
     metadata:
       labels:
-        # Apply this label to pods and default
-        # the Deployment label selector to this value
-        app: pow-golang
+        # Каждому поду назначается метка с наименованием,
+        # для того чтобы в последующем ReplicaSet мог
+        # найти поды, которыми он управляет.
+        app.kubernetes.io/name: pow-golang
     spec:
       containers:
+      # Под содержит один контейнер
+      # с наименованием pow-golang
       - name: pow-golang
-        # Run this image
+        # Наименование нашего образа.
         image: urvanov/pow-golang
+        # Для самостоятельно собираемых образов
+        # важно выставлять политику выкачивания из
+        # реестра.
         imagePullPolicy: IfNotPresent
