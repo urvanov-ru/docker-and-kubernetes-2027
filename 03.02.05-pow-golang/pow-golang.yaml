@@ -30,5 +30,5 @@ spec:
         image: urvanov/pow-golang
         # Для самостоятельно собираемых образов
         # важно выставлять политику выкачивания из
-        # реестра.
+        # реестра IfNotPresent или Never.
         imagePullPolicy: IfNotPresent
