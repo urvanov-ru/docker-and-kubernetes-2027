@@ -32,3 +32,21 @@ spec:
         # важно выставлять политику выкачивания из
         # реестра IfNotPresent или Never.
         imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+# Тип ресурса.
+# Сервис необходим для обращения к развёрнутым
+# в подах контейнерам с балансировкой нагрузки.
+kind: Service
+metadata:
+  # Наименование сервиса
+  name: pow-golang
+spec:
+  type: NodePort
+  selector:
+    # Сервис создаётся для подов со следующими
+    # метками.
+    app.kubernetes.io/name: pow-golang 
+  ports:
+    # Сервис подключается к порту 8087 подов.
+    - port: 8087
