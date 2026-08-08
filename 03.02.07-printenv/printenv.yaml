@@ -2,8 +2,8 @@
 # Обратите внимание, что apiVersion отличается от того,
 # который использовался при описании Deployment.
 apiVersion: batch/v1
-# Тип ресурса Deployment. В этом YAML-файле
-# Описывается именно Deployment.
+# Тип ресурса Job. В этом YAML-файле
+# Описывается именно Job.
 kind: Job
 metadata:
   # Наименование Deployment
