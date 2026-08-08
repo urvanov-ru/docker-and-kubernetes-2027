@@ -1,0 +1,34 @@
+# Версия API.
+apiVersion: apps/v1
+# Тип ресурса Deployment. В этом YAML-файле
+# Описывается именно Deployment.
+kind: Deployment
+metadata:
+  # Наименование Deployment
+  name: printenv
+spec:
+  # Один работающий под
+  replicas: 1
+  # Поды для управления выбираются по стандартной 
+  # стандартной метке наименования printenv.
+  selector:
+    matchLabels:
+        app.kubernetes.io/name: printenv
+  template:
+    metadata:
+      labels:
+        # Каждому поду назначается метка с наименованием,
+        # для того чтобы в последующем ReplicaSet мог
+        # найти поды, которыми он управляет.
+        app.kubernetes.io/name: printenv
+    spec:
+      containers:
+      # Под содержит один контейнер
+      # с наименованием printenv.
+      - name: printenv
+        # Наименование нашего образа.
+        image: urvanov/printenv
+        # Для самостоятельно собираемых образов
+        # важно выставлять политику выкачивания из
+        # реестра IfNotPresent или Never.
+        imagePullPolicy: IfNotPresent
