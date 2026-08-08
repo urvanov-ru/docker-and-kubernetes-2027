@@ -20,7 +20,7 @@ spec:
       # с наименованием printenv.
       - name: printenv
         # Наименование нашего образа.
-        image: urvanov/printenv
+        image: busybox:1.37.0
         # Для самостоятельно собираемых образов
         # важно выставлять политику выкачивания из
         # реестра IfNotPresent или Never.
