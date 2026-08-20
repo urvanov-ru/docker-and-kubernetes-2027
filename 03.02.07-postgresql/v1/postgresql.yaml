@@ -1,0 +1,89 @@
+# Версия API.
+apiVersion: apps/v1
+# Тип ресурса Deployment. В этом YAML-файле
+# Описывается именно Deployment.
+kind: Deployment
+metadata:
+  # Наименование Deployment
+  name: postgresql
+spec:
+  # Один работающий под.
+  # PostgreSQL нужно дополнительно настраивать,
+  # чтобы он мог работать в режиме кластера.
+  # В этом примере мы не будем этим заниматься.
+  # Настройка PostgreSQL в режиме кластера выходит за 
+  # рамки этой книги.
+  replicas: 1
+  # Селектор описывает, какими подами будет управлять создаваемый
+  # ReplicaSet. Используем стандартную метку наименования.
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: postgresql
+  template:
+    metadata:
+      labels:
+        # Каждому поду назначается метка с наименованием,
+        # для того чтобы в последующем ReplicaSet мог
+        # найти поды, которыми он управляет.
+        app.kubernetes.io/name: postgresql
+    spec:
+      containers:
+        # Один контейнер с наименованием postgresql.
+        - name: postgresql
+          # Образ PostgreSQL для создания контейнера.
+          image: postgres:18.6-alpine3.23
+          # Настройка образа через переменные окружения.
+          # Подробности см. https://hub.docker.com/_/postgres
+          env:
+            - name: POSTGRES_USER
+              value: mytempuser
+            - name: POSTGRES_PASSWORD
+              value: mytemppassword
+            - name: POSTGRES_DB
+              value: mytempdb
+          # livenessProbe для определения, когда
+          # перезапускать контейенер.
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -d
+                - mytempdb
+                - -U
+                - mytempuser
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          # Проверка готовности контейнера
+          # обслуживать запросы.
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -d
+                - mytempdb
+                - -U
+                - mytempuser
+            # В первые 5 секунд после запуска контейнера
+            # мы не будем проверять его готовность.
+            initialDelaySeconds: 5
+            # Проверяем готовность контейнера каждые 5 секунд.
+            periodSeconds: 5
+
+---
+# Версия API.
+apiVersion: v1
+# Тип ресурса.
+# Сервис необходим для обращения к нашему PostgreSQL.
+kind: Service
+metadata:
+  # Наименование сервиса
+  name: postgresql
+spec:
+  type: ClusterIP
+  selector:
+    # Сервис создаётся для подов со следующими
+    # метками.
+    app.kubernetes.io/name: postgresql
+  ports:
+    # Сервис подключается к порту 5432 подов.
+    - port: 5432
