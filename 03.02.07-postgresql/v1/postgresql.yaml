@@ -41,40 +41,7 @@ spec:
               value: mytemppassword
             - name: POSTGRES_DB
               value: mytempdb
-          # livenessProbe для определения, когда
-          # перезапускать контейенер.
-          livenessProbe:
-            exec:
-              command:
-                - pg_isready
-                - -d
-                - mytempdb
-                - -U
-                - mytempuser
-            # Первые 10 секунд перезапускать контейнер точно не
-            # нужно. 
-            initialDelaySeconds: 10
-            # Каждые 10 секунд проверяем, что контейнер
-            # ещё живой, и его не нужно перезапустить
-            # каждый 10 секунд.
-            periodSeconds: 10
-          # Проверка готовности контейнера
-          # обслуживать запросы.
-          readinessProbe:
-            exec:
-              command:
-                - pg_isready
-                - -d
-                - mytempdb
-                - -U
-                - mytempuser
-            # В первые 5 секунд после запуска контейнера
-            # мы не будем проверять его готовность обслуживать
-            # запросы..
-            initialDelaySeconds: 5
-            # Проверяем готовность контейнера принимать запросы
-            # каждые 5 секунд.
-            periodSeconds: 5
+ 
 
 ---
 # Версия API.
