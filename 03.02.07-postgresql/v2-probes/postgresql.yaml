@@ -42,7 +42,8 @@ spec:
             - name: POSTGRES_DB
               value: mytempdb
           # livenessProbe для определения, когда
-          # перезапускать контейенер.
+          # контейнер окончательно завис, и его нужно 
+          # перезапустить.
           livenessProbe:
             exec:
               command:
