@@ -92,6 +92,14 @@ spec:
             # Проверяем готовность контейнера принимать запросы
             # каждые 5 секунд.
             periodSeconds: 5
+          # Точка монтирования тома для хранения данных PostgreSQL.
+          volumeMounts:
+            - name: postgresql-storage
+              # Каталог данных PostgreSQL внутри контейнера.
+              mountPath: /var/lib/postgresql
+              # Подкаталог на томе, чтобы данные хранились отдельно от
+              # корневой файловой системы тома.
+              subPath: pgdata
       volumes:
         - name: postgresql-storage
           persistentVolumeClaim:
