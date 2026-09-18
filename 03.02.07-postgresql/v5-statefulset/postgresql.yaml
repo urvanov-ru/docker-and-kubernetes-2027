@@ -1,0 +1,120 @@
+apiVersion: apps/v1
+# Тип ресурса StatefulSet. В этом YAML-файле
+# Описывается именно StatefulSet.
+kind: StatefulSet
+metadata:
+  # Наименование StatefulSet
+  name: postgresql
+spec:
+  # Один работающий под.
+  # PostgreSQL нужно дополнительно настраивать,
+  # чтобы он мог работать в режиме кластера.
+  # В этом примере мы не будем этим заниматься.
+  # Настройка PostgreSQL в режиме кластера выходит за 
+  # рамки этой книги.
+  replicas: 1
+  # Селектор описывает, какими подами будет управлять создаваемый
+  # наш StatefulSet. Используем стандартную метку наименования.
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: postgresql
+  # Каждый под получает постоянное сетевое имя на основе
+  # значения из поля serviceName.
+  serviceName: postgresql
+  template:
+    metadata:
+      labels:
+        # Каждому поду назначается метка с наименованием,
+        # для того чтобы в последующем ReplicaSet мог
+        # найти поды, которыми он управляет.
+        app.kubernetes.io/name: postgresql
+    spec:
+      containers:
+        # Один контейнер с наименованием postgresql.
+        - name: postgresql
+          # Образ PostgreSQL для создания контейнера.
+          image: postgres:18.6-alpine3.23
+          # Настройка образа через переменные окружения.
+          # Подробности см. https://hub.docker.com/_/postgres
+          envFrom:
+            - secretRef:
+                name: postgresql-secret
+          # livenessProbe для определения, когда
+          # контейнер окончательно завис, и его нужно 
+          # перезапустить.
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -d
+                - mytempdb
+                - -U
+                - mytempuser
+            # Первые 10 секунд перезапускать контейнер точно не
+            # нужно. 
+            initialDelaySeconds: 10
+            # Каждые 10 секунд проверяем, что контейнер
+            # ещё живой, и его не нужно перезапустить
+            # каждый 10 секунд.
+            periodSeconds: 10
+          # Проверка готовности контейнера
+          # обслуживать запросы.
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -d
+                - mytempdb
+                - -U
+                - mytempuser
+            # В первые 5 секунд после запуска контейнера
+            # мы не будем проверять его готовность обслуживать
+            # запросы..
+            initialDelaySeconds: 5
+            # Проверяем готовность контейнера принимать запросы
+            # каждые 5 секунд.
+            periodSeconds: 5
+          # Точка монтирования тома для хранения данных PostgreSQL.
+          volumeMounts:
+            - name: postgresql-storage
+              # Каталог данных PostgreSQL внутри контейнера.
+              mountPath: /var/lib/postgresql
+              # Подкаталог на томе, чтобы данные хранились отдельно от
+              # корневой файловой системы тома.
+              subPath: pgdata
+  volumeClaimTemplates:
+  - metadata:
+      name: postgresql-storage
+    spec:
+      # Для  PersistentVolumeClaim с storageClassName
+      # minikube создаёт PersistentVolume автоматически.
+      storageClassName: standard
+      accessModes:
+        # Том может быть подключён только к одному поду 
+        - ReadWriteOncePod
+      resources:
+        requests:
+          # Требует хранилище объёмом 1 гигабайт.
+          storage: 1Gi
+          # Версия API.
+
+---
+# Версия API.
+apiVersion: v1
+# Тип ресурса.
+# Сервис необходим для обращения к нашему PostgreSQL.
+kind: Service
+metadata:
+  # Наименование сервиса
+  name: postgresql
+spec:
+  type: ClusterIP
+  selector:
+    # Сервис создаётся для подов со следующими
+    # метками.
+    app.kubernetes.io/name: postgresql
+    # Пример использования индекса пода от StatefulSet
+    apps.kubernetes.io/pod-index: "0"
+  ports:
+    # Сервис подключается к порту 5432 подов.
+    - port: 5432
