@@ -25,7 +25,7 @@ spec:
     metadata:
       labels:
         # Каждому поду назначается метка с наименованием,
-        # для того чтобы в последующем ReplicaSet мог
+        # для того чтобы в последующем StatefulSet мог
         # найти поды, которыми он управляет.
         app.kubernetes.io/name: postgresql
     spec:
