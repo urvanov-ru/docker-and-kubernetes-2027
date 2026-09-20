@@ -5,6 +5,8 @@
 Разворачивание в Kubernetes
 ===========================
 ```
+$ eval $(minikube -p minikube docker-env)
+
 $ docker build -t urvanov/lottery-check-init \
 -f "init-container.Dockerfile" .
 

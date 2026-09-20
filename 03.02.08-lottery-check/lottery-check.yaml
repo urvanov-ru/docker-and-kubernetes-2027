@@ -5,30 +5,16 @@ metadata:
   name: lottery-check-pg-secret
 type: Opaque
 data:
-  POSTGRES_USER: lottery-check
+  # lottery-check
+  POSTGRES_USER: bG90dGVyeS1jaGVjaw==
+  # password123
   POSTGRES_PASSWORD: cGFzc3dvcmQxMjM=
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: lottery-check-pvc
-spec:
-  # Для  PersistentVolumeClaim с storageClassName
-  # minikube создаёт PersistentVolume автоматически.
-  storageClassName: standard
-  accessModes:
-    # Том может быть подключён только к одному поду 
-    - ReadWriteOncePod
-  resources:
-    requests:
-      # Требует хранилище объёмом 1 гигабайт.
-      storage: 1Gi
 ---
 # Версия API.
 apiVersion: apps/v1
 # Тип ресурса Deployment. В этом YAML-файле
 # Описывается именно Deployment.
-kind: Deployment
+kind: StatefulSet
 metadata:
   # Наименование Deployment
   name: lottery-check-pg
@@ -62,7 +48,7 @@ spec:
           # Подробности см. https://hub.docker.com/_/postgres
           envFrom:
             - secretRef:
-              name: lottery-check-secret
+                name: lottery-check-pg-secret
           # livenessProbe для определения, когда
           # контейнер окончательно завис, и его нужно 
           # перезапустить.
@@ -106,11 +92,21 @@ spec:
               # Подкаталог на томе, чтобы данные хранились отдельно от
               # корневой файловой системы тома.
               subPath: pgdata
-      volumes:
-        - name: postgresql-storage
-          persistentVolumeClaim:
-            claimName: lottery-check-pvc
-
+  volumeClaimTemplates:
+  - metadata:
+      name: postgresql-storage
+    spec:
+      # Для  PersistentVolumeClaim с storageClassName
+      # minikube создаёт PersistentVolume автоматически.
+      storageClassName: standard
+      accessModes:
+        # Том может быть подключён только к одному поду 
+        - ReadWriteOncePod
+      resources:
+        requests:
+          # Требует хранилище объёмом 1 гигабайт.
+          storage: 1Gi
+          # Версия API.
 ---
 # Версия API.
 apiVersion: v1
@@ -119,28 +115,17 @@ apiVersion: v1
 kind: Service
 metadata:
   # Наименование сервиса
-  name: postgresql
+  name: lottery-check-pg-service
 spec:
   type: ClusterIP
+  clusterIP: None
   selector:
     # Сервис создаётся для подов со следующими
     # метками.
-    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/name: lottery-check-pg
   ports:
     # Сервис подключается к порту 5432 подов.
     - port: 5432
-
-
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: lottery-check-secret
-type: Opaque
-data:
-  SPRING_DATASOURCE_URL: jdbc:postgresql://lottery-check-pg:5432/lottery-check
-  SPRING_DATASOURCE_USERNAME: lottery-check
-  SPRING_DATASOURCE_PASSWORD: cGFzc3dvcmQxMjM=
 
 
 ---
@@ -172,12 +157,25 @@ spec:
         # 
         - name: postgresql
           # 
-          image: postgres:18.6-alpine3.23
+          image: urvanov/lottery-check
           # 
-          envFrom:
-            - secretRef:
-              name: lottery-check-secret
-          
+          env:
+          - name: SPRING_DATASOURCE_URL
+            value: jdbc:postgresql://lottery-check-pg-0.lottery-check-pg-service.docker-and-kubernetes-2027.svc.cluster.local:5432/lottery-check
+          - name: SPRING_DATASOURCE_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: lottery-check-pg-secret
+                key: POSTGRES_USER
+          - name: SPRING_DATASOURCE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: lottery-check-pg-secret
+                key: POSTGRES_PASSWORD
+          # Для самостоятельно собираемых образов
+          # важно выставлять политику выкачивания из
+          # реестра IfNotPresent или Never.
+          imagePullPolicy: IfNotPresent
 
 ---
 # Версия API.
@@ -196,6 +194,6 @@ spec:
     app.kubernetes.io/name: lottery-check
   ports:
     # Сервис подключается к порту 5432 подов.
-    - port: 5432
+    - port: 8080
 
 
