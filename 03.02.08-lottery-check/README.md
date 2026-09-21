@@ -14,6 +14,13 @@ $ docker build -t urvanov/lottery-check-init \
 $ ./mvnw spring-boot:build-image \
 -Dspring-boot.build-image.imageName=urvanov/lottery-check
 
+
+$ kubectl apply -f kubernetes/secret.yaml
+
+$ kubectl apply -f kubernetes/config-map.yaml
+
+$ kubectl apply -f kubernetes/lottery-check.yaml
+
 ```
 
 
