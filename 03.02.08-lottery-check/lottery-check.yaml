@@ -10,6 +10,15 @@ data:
   # password123
   POSTGRES_PASSWORD: cGFzc3dvcmQxMjM=
 ---
+# Настройки приложения lottery-check.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lottery-check-config
+data:
+  # URL для подключения к базе данных PostgreSQL.
+  SPRING_DATASOURCE_URL: jdbc:postgresql://lottery-check-pg-0.lottery-check-pg-service.docker-and-kubernetes-2027.svc.cluster.local:5432/lottery-check
+---
 # Версия API.
 apiVersion: apps/v1
 # Тип ресурса Deployment. В этом YAML-файле
@@ -161,7 +170,10 @@ spec:
           # 
           env:
           - name: SPRING_DATASOURCE_URL
-            value: jdbc:postgresql://lottery-check-pg-0.lottery-check-pg-service.docker-and-kubernetes-2027.svc.cluster.local:5432/lottery-check
+            valueFrom:
+              configMapKeyRef:
+                name: lottery-check-config
+                key: SPRING_DATASOURCE_URL
           - name: SPRING_DATASOURCE_USERNAME
             valueFrom:
               secretKeyRef:
