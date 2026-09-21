@@ -152,7 +152,7 @@ spec:
             valueFrom:
               configMapKeyRef:
                 name: lottery-check-config
-                key: SPRING_DATASOURCE_URL
+                key: jdbc_url
           - name: SPRING_DATASOURCE_USERNAME
             valueFrom:
               secretKeyRef:

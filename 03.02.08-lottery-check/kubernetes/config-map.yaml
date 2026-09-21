@@ -5,4 +5,4 @@ metadata:
   name: lottery-check-config
 data:
   # URL для подключения к базе данных PostgreSQL.
-  SPRING_DATASOURCE_URL: jdbc:postgresql://lottery-check-pg-0.lottery-check-pg-service.docker-and-kubernetes-2027.svc.cluster.local:5432/lottery-check
+  jdbc_url: jdbc:postgresql://lottery-check-pg-0.lottery-check-pg-service.docker-and-kubernetes-2027.svc.cluster.local:5432/lottery-check
