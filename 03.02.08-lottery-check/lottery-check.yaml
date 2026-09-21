@@ -106,7 +106,7 @@ spec:
         requests:
           # Требует хранилище объёмом 1 гигабайт.
           storage: 1Gi
-          # Версия API.
+  serviceName: lottery-check-pg-service
 ---
 # Версия API.
 apiVersion: v1
