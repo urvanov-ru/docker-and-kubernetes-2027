@@ -172,6 +172,27 @@ spec:
               secretKeyRef:
                 name: lottery-check-pg-secret
                 key: POSTGRES_PASSWORD
+          # livenessProbe проверяет, что приложение живо
+          # (не зависло), через Actuator. Проверка не зависит
+          # от базы данных.
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          # readinessProbe проверяет, что приложение готово
+          # принимать запросы. Группа readiness включает проверку
+          # подключения к PostgreSQL, поэтому пока база недоступна,
+          # под не будет получать трафик.
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 3
           # Для самостоятельно собираемых образов
           # важно выставлять политику выкачивания из
           # реестра IfNotPresent или Never.
