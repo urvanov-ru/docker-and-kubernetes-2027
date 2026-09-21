@@ -1,24 +1,3 @@
-# Файл с описанием ресурсов Kubernetes.
-apiVersion: v1
-kind: Secret
-metadata:
-  name: lottery-check-pg-secret
-type: Opaque
-data:
-  # lottery-check
-  POSTGRES_USER: bG90dGVyeS1jaGVjaw==
-  # password123
-  POSTGRES_PASSWORD: cGFzc3dvcmQxMjM=
----
-# Настройки приложения lottery-check.
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: lottery-check-config
-data:
-  # URL для подключения к базе данных PostgreSQL.
-  SPRING_DATASOURCE_URL: jdbc:postgresql://lottery-check-pg-0.lottery-check-pg-service.docker-and-kubernetes-2027.svc.cluster.local:5432/lottery-check
----
 # Версия API.
 apiVersion: apps/v1
 # Тип ресурса Deployment. В этом YAML-файле
