@@ -167,6 +167,8 @@ spec:
               secretKeyRef:
                 name: lottery-check-pg-secret
                 key: POSTGRES_PASSWORD
+          - name: SPRING_FLYWAY_ENABLED
+            value: false
           # livenessProbe проверяет, что приложение живо
           # (не зависло), через Actuator. Проверка не зависит
           # от базы данных.
