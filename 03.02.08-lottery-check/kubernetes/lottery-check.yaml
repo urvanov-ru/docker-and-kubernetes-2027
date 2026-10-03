@@ -3,11 +3,12 @@
 ################################################################################
 # Версия API.
 apiVersion: apps/v1
-# Тип ресурса Deployment. В этом YAML-файле
-# Описывается именно Deployment.
+# Тип ресурса StatefulSet. В этом YAML-файле
+# Описывается именно StatefulSet, так у нашего PostgreSQL
+# существует сохраняемое между запусками состояние.
 kind: StatefulSet
 metadata:
-  # Наименование Deployment
+  # Наименование StatefulSet
   name: lottery-check-pg
 spec:
   # Один работающий под.
@@ -15,18 +16,23 @@ spec:
   # чтобы он мог работать в режиме кластера.
   # В этом примере мы не будем этим заниматься.
   # Настройка PostgreSQL в режиме кластера выходит за 
-  # рамки этой книги.
+  # рамки этой книги. Сами экземпляры PostgreSQL
+  # не могут работать с одним и тем же каталогом PG_DATA.
   replicas: 1
   # Селектор описывает, какими подами будет управлять создаваемый
-  # ReplicaSet. Используем стандартную метку наименования.
+  # StatefulSet. Используем стандартную метку наименования
+  # app.kubernetes.io/name с наименованием приложения.
   selector:
     matchLabels:
       app.kubernetes.io/name: lottery-check-pg
+  # Каждый под получает постоянное сетевое имя на основе
+  # значения из поля serviceName.
+  serviceName: lottery-check-pg-service
   template:
     metadata:
       labels:
         # Каждому поду назначается метка с наименованием,
-        # для того чтобы в последующем ReplicaSet мог
+        # для того чтобы в последующем StatefulSet мог
         # найти поды, которыми он управляет.
         app.kubernetes.io/name: lottery-check-pg
     spec:
@@ -97,27 +103,8 @@ spec:
         requests:
           # Требует хранилище объёмом 1 гигабайт.
           storage: 1Gi
-  serviceName: lottery-check-pg-service
 ---
-# Версия API.
-apiVersion: v1
-# Тип ресурса.
-# Сервис необходим для обращения к нашему PostgreSQL.
-kind: Service
-metadata:
-  # Наименование сервиса
-  name: lottery-check-pg-service
-spec:
-  type: ClusterIP
-  clusterIP: None
-  selector:
-    # Сервис создаётся для подов со следующими
-    # метками.
-    app.kubernetes.io/name: lottery-check-pg
-  ports:
-    # Сервис подключается к порту 5432 подов.
-    - port: 5432
----
+
 ################################################################################
 # Сервис проверки лотерейных билетов
 ################################################################################

@@ -8,7 +8,8 @@
 $ eval $(minikube -p minikube docker-env)
 
 $ docker build -t urvanov/lottery-check-init \
--f "init-container.Dockerfile" .
+-f "init-container.Dockerfile" \
+--no-cache --progress=plain .
 
 
 $ ./mvnw spring-boot:build-image \
@@ -44,7 +45,8 @@ $ docker run \
 
 ```
 $ docker build -t urvanov/lottery-check-init \
--f "init-container.Dockerfile" .
+-f "init-container.Dockerfile" \
+--no-cache --progress=plain .
 ```
 
 Узнаём идентификатор контейнера с PostgreSQL.
