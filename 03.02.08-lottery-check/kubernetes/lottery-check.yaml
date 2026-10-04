@@ -118,7 +118,7 @@ metadata:
   name: lottery-check
 spec:
 
-  replicas: 1
+  replicas: 3
   # Селектор описывает, какими подами будет управлять создаваемый
   # ReplicaSet. Используем стандартную метку наименования.
   selector:
@@ -133,11 +133,14 @@ spec:
         app.kubernetes.io/name: lottery-check
     spec:
       containers:
-        # 
-        - name: postgresql
-          # 
+        # Основной контейнер с запущенным сервисом
+        # проверки лотерейных билетов.
+        - name: main
+          # Базовый образ, собираемый с помощью Spring Boot
+          # плагина.
           image: urvanov/lottery-check
-          # 
+          # Настройки подключения к базе данных
+          # и прочие.
           env:
           - name: SPRING_DATASOURCE_URL
             valueFrom:
@@ -184,7 +187,22 @@ spec:
       initContainers:
       - name: flyway-initialization
         image: urvanov/lottery-check-init:latest
-        
+        env:
+        - name: FLYWAY_URL
+          valueFrom:
+            configMapKeyRef:
+              name: lottery-check-config
+              key: jdbc_url
+        - name: FLYWAY_USER
+          valueFrom:
+            secretKeyRef:
+              name: lottery-check-pg-secret
+              key: POSTGRES_USER
+        - name: FLYWAY_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: lottery-check-pg-secret
+              key: POSTGRES_PASSWORD
 
 ---
 # Версия API.
