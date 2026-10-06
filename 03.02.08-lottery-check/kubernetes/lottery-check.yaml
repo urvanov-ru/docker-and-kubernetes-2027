@@ -185,19 +185,39 @@ spec:
           # реестра IfNotPresent или Never.
           imagePullPolicy: IfNotPresent
       initContainers:
+      # Контейнер, выполняющий скрипты миграции Flyway
       - name: flyway-initialization
+        # Используется образ, заранее собранный самостоятельно.
         image: urvanov/lottery-check-init:latest
+        # Контейнер ицициализации принимает параметры
+        # подключения к базе данных в переменных окружения.
+        # Передаём ему эти переменные окружения из секретов.
         env:
+        # Переменная окружения FLYWAY_URL используется
+        # для передачи адреса базы данных.
+        # Заполняем его значением
+        # с ключом jdbc_url из ConfigMap с наименованием
+        # lottery-check-config. 
         - name: FLYWAY_URL
           valueFrom:
             configMapKeyRef:
               name: lottery-check-config
               key: jdbc_url
+        # Переменная окружения FLYWAY_USER используется
+        # для передачи логина базы данных..
+        # Заполняем её логином пользователя из секрета
+        # lottery-check-pg-secret. Логин пользователя
+        # хранится в секрете по ключу POSTGRES_USER.
         - name: FLYWAY_USER
           valueFrom:
             secretKeyRef:
               name: lottery-check-pg-secret
               key: POSTGRES_USER
+        # Переменная окружения FLYWAY_PASSWORD используется
+        # для передачи пароля пользователя базы данных.
+        # Заполняем её паролем пользвоаетеля из секрета
+        # lottery-check-pg-secret. Пароль пользователя в
+        # секрете хранится по ключу POSTGRES_PASSWORD.
         - name: FLYWAY_PASSWORD
           valueFrom:
             secretKeyRef:
