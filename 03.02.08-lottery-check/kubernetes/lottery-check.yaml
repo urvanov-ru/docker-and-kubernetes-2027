@@ -239,7 +239,7 @@ spec:
           # Для самостоятельно собираемых образов
           # важно выставлять политику выкачивания из
           # реестра IfNotPresent или Never.
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Never
       initContainers:
       # Контейнер, выполняющий скрипты миграции Flyway
       - name: flyway-initialization
