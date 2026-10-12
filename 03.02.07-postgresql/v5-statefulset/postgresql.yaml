@@ -109,6 +109,11 @@ metadata:
   name: postgresql
 spec:
   type: ClusterIP
+  # Headless-сервис: без кластерного IP.
+  # Поле serviceName у StatefulSet ссылается на него,
+  # чтобы поды получали стабильные DNS-имя
+  # вида postgresql-0.postgresql.
+  clusterIP: None
   selector:
     # Сервис создаётся для подов со следующими
     # метками.
