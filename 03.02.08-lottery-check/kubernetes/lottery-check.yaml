@@ -204,8 +204,11 @@ spec:
           # (не зависло), через Actuator. Проверка не зависит
           # от базы данных.
           livenessProbe:
+            # Используется запрос HTTP GET
             httpGet:
+              # Путь в сервисе для HTTP GET запроса.
               path: /actuator/health/liveness
+              # Порт для HTTP GET запроса.
               port: 8080
             initialDelaySeconds: 10
             periodSeconds: 10
@@ -215,8 +218,11 @@ spec:
           # подключения к PostgreSQL, поэтому пока база недоступна,
           # под не будет получать трафик.
           readinessProbe:
+            # Используется запрос HTTP GET
             httpGet:
+              # Путь в сервисе для HTTP GET запроса.
               path: /actuator/health/readiness
+              # Порт для HTTP GET запроса.
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 5
