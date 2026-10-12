@@ -167,28 +167,38 @@ spec:
         # Основной контейнер с запущенным сервисом
         # проверки лотерейных билетов.
         - name: main
-          # Базовый образ, собираемый с помощью Spring Boot
+          # Базовый образ, собранный с помощью Spring Boot
           # плагина.
           image: urvanov/lottery-check
           # Настройки подключения к базе данных
           # и прочие.
           env:
+            # Наименование переменной окружения.
           - name: SPRING_DATASOURCE_URL
+            # Значение 
             valueFrom:
+              # Значение берётся из ConfigMap
               configMapKeyRef:
+                # Наименование секрета
                 name: lottery-check-config
+                # Ключ в секрете, значение которого подставляется
+                # в переменную окружения.
                 key: jdbc_url
+          # Наименование переменной окружения.
           - name: SPRING_DATASOURCE_USERNAME
             valueFrom:
               secretKeyRef:
                 name: lottery-check-pg-secret
                 key: POSTGRES_USER
+          # Наименование переменной окружения.
           - name: SPRING_DATASOURCE_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: lottery-check-pg-secret
                 key: POSTGRES_PASSWORD
+          # Наименование переменной окружения.
           - name: SPRING_FLYWAY_ENABLED
+            # Значение false отключает миграции Flyway.
             value: false
           # livenessProbe проверяет, что приложение живо
           # (не зависло), через Actuator. Проверка не зависит
