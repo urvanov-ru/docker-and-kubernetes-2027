@@ -199,7 +199,10 @@ spec:
           # Наименование переменной окружения.
           - name: SPRING_FLYWAY_ENABLED
             # Значение false отключает миграции Flyway.
-            value: false
+            # Значение обязательно в кавычках: поле EnvVar.value
+            # в Kubernetes имеет тип string, иначе YAML превратит
+            # его в boolean и API-сервер отклонит манифест.
+            value: "false"
           # livenessProbe проверяет, что приложение живо
           # (не зависло), через Actuator. Проверка не зависит
           # от базы данных.
