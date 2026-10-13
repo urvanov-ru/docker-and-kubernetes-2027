@@ -21,7 +21,7 @@ public class LotteryCheckApplication {
         SpringApplication.run(LotteryCheckApplication.class, args);
     }
 
-    @GetMapping(value = "/check/{number}",
+    @GetMapping(value = {"/check/{number}", "/check/{number}/"},
             produces = MediaType.APPLICATION_JSON_VALUE)
     public LotteryTicket check(@PathVariable("number") String number) {
         return lotteryTicketRepository.findById(number).orElseThrow(
