@@ -1,0 +1,50 @@
+# Версия API.
+# Обратите внимание, что apiVersion отличается от того,
+# который использовался при описании Deployment.
+apiVersion: batch/v1
+# Тип ресурса Job. В этом YAML-файле
+# Описывается именно Job.
+kind: Job
+metadata:
+  # Наименование Job
+  name: job-flyway
+spec:
+  template:
+    spec:
+      # Это обязательное поле. Без него объект
+      # Job НЕ будет создан. 
+      # возможные значения: Never, OnFailure.
+      restartPolicy: Never
+      containers:
+      # Под содержит один контейнер
+      # с наименованием flyway.
+      - name: flyway
+        # Тот же образ, что и в контейнере инициализации
+        # из lottery-check.yaml. Entrypoint этого образа
+        # выполняет flyway migrate.
+        image: urvanov/lottery-check-init:latest
+        # Для самостоятельно собранного образа важно
+        # не тянуть его из реестра при каждом запуске.
+        imagePullPolicy: IfNotPresent
+        # Параметры подключения к базе данных передаются
+        # в переменных окружения так же, как и в контейнере
+        # инициализации из lottery-check.yaml.
+        env:
+        # Адрес базы данных из ConfigMap.
+        - name: FLYWAY_URL
+          valueFrom:
+            configMapKeyRef:
+              name: lottery-check-config
+              key: jdbc_url
+        # Логин пользователя базы данных из секрета.
+        - name: FLYWAY_USER
+          valueFrom:
+            secretKeyRef:
+              name: lottery-check-pg-secret
+              key: POSTGRES_USER
+        # Пароль пользователя базы данных из секрета.
+        - name: FLYWAY_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: lottery-check-pg-secret
+              key: POSTGRES_PASSWORD
