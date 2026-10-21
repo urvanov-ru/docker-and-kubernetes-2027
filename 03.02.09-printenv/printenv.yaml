@@ -6,7 +6,7 @@ apiVersion: batch/v1
 # Описывается именно Job.
 kind: Job
 metadata:
-  # Наименование Deployment
+  # Наименование Job
   name: printenv
 spec:
   template:
