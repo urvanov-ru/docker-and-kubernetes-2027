@@ -1,0 +1,67 @@
+# Версия API.
+# apiVersion для CronJob отличается от того,
+# который использовался при описании Deployment.
+apiVersion: batch/v1
+# Тип ресурса CronJob. В этом YAML-файле
+# описывается именно CronJob.
+kind: CronJob
+metadata:
+  # Наименование CronJob.
+  name: postgres-vacuum-full
+spec:
+  # Расписание в формате cron. Пять полей:
+  # минута, час, день месяца, месяц, день недели.
+  # Выражение "0 3 * * *" означает каждые сутки
+  # в 3 часа ночи — время, когда нагрузка на базу
+  # данных минимальна.
+  schedule: "0 3 * * *"
+  # Запрещаем запускать новый CronJob, пока не завершился
+  # предыдущий: VACUUM FULL блокирует таблицы и
+  # переписывает их целиком, поэтому параллельные
+  # запуски недопустимы.
+  concurrencyPolicy: Forbid
+  # Сколько завершённых и неуспешных CronJob хранить
+  # в истории.
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  # Шаблон Job, который создаётся по расписанию.
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          # Это обязательное поле для Job.
+          # возможные значения: Never, OnFailure.
+          restartPolicy: OnFailure
+          containers:
+          # Под содержит один контейнер
+          # с наименованием vacuum-full.
+          - name: vacuum-full
+            # Тот же образ, что и у сервера PostgreSQL
+            # из StatefulSet. В нём есть клиент psql.
+            image: postgres:18.6-alpine3.23
+            # Переменные окружения берём из того же секрета
+            # и с теми же наименованиями, что и в StatefulSet
+            # lottery-check-pg: POSTGRES_USER и POSTGRES_PASSWORD.
+            envFrom:
+              - secretRef:
+                  name: lottery-check-pg-secret
+            # Команда запуска VACUUM FULL во всех таблицах
+            # базы данных.
+            command:
+              - /bin/sh
+              - -c
+              - |
+                set -e
+                # Клиент psql (библиотека libpq) берёт пароль
+                # из переменной PGPASSWORD, поэтому передаём
+                # в неё значение из POSTGRES_PASSWORD.
+                export PGPASSWORD="$POSTGRES_PASSWORD"
+                # Логин берём из POSTGRES_USER, как и в StatefulSet.
+                # Подключаемся к headless-сервису PostgreSQL
+                # и выполняем VACUUM FULL во всей базе данных.
+                psql \
+                  --host lottery-check-pg-0.lottery-check-pg-service \
+                  --username "$POSTGRES_USER" \
+                  --dbname lottery-check \
+                  --command "VACUUM FULL;"
+
