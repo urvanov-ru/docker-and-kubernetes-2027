@@ -11,9 +11,8 @@ metadata:
 spec:
   # Расписание в формате cron. Пять полей:
   # минута, час, день месяца, месяц, день недели.
-  # Выражение "0 3 * * *" означает каждые сутки
-  # в 3 часа ночи — время, когда нагрузка на базу
-  # данных минимальна.
+  # Выражение "0 3 * * *" означает запуск
+  # каждую ночь в 3 часа.
   schedule: "0 3 * * *"
   # Запрещаем запускать новый CronJob, пока не завершился
   # предыдущий: VACUUM FULL блокирует таблицы и
@@ -39,29 +38,33 @@ spec:
             # Тот же образ, что и у сервера PostgreSQL
             # из StatefulSet. В нём есть клиент psql.
             image: postgres:18.6-alpine3.23
-            # Переменные окружения берём из того же секрета
-            # и с теми же наименованиями, что и в StatefulSet
-            # lottery-check-pg: POSTGRES_USER и POSTGRES_PASSWORD.
-            envFrom:
-              - secretRef:
+            # Клиент psql (библиотека libpq) читает параметры
+            # подключения из переменных окружения PGHOST,
+            # PGUSER и PGPASSWORD.
+            env:
+            # Адрес headless-сервиса PostgreSQL.
+            - name: PGHOST
+              value: lottery-check-pg-0.lottery-check-pg-service
+            # Логин пользователя базы данных из секрета
+            # lottery-check-pg-secret (ключ POSTGRES_USER).
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
                   name: lottery-check-pg-secret
+                  key: POSTGRES_USER
+            # Пароль пользователя базы данных из секрета
+            # lottery-check-pg-secret (ключ POSTGRES_PASSWORD).
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: lottery-check-pg-secret
+                  key: POSTGRES_PASSWORD
             # Команда запуска VACUUM FULL во всех таблицах
-            # базы данных.
+            # базы данных. psql читает PGHOST, PGUSER
+            # и PGPASSWORD из переменных окружения выше,
+            # поэтому оболочка не нужна: код возврата psql
+            # становится кодом возврата контейнера.
             command:
-              - /bin/sh
-              - -c
-              - |
-                set -e
-                # Клиент psql (библиотека libpq) берёт пароль
-                # из переменной PGPASSWORD, поэтому передаём
-                # в неё значение из POSTGRES_PASSWORD.
-                export PGPASSWORD="$POSTGRES_PASSWORD"
-                # Логин берём из POSTGRES_USER, как и в StatefulSet.
-                # Подключаемся к headless-сервису PostgreSQL
-                # и выполняем VACUUM FULL во всей базе данных.
-                psql \
-                  --host lottery-check-pg-0.lottery-check-pg-service \
-                  --username "$POSTGRES_USER" \
-                  --dbname lottery-check \
-                  --command "VACUUM FULL;"
-
+              - psql
+              - --command
+              - "VACUUM FULL VERBOSE;"
