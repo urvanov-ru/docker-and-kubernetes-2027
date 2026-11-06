@@ -11,7 +11,7 @@ EXPOSE 80
 # Копирорование файла конфигурации Apache HTTP Server.
 # С поддержкой SSI (Server Side Includes).
 COPY ./ssi-enabled-httpd.conf /usr/local/apache2/conf/httpd.conf
-# Копирование директории с сайтом на сервер исключая все md и
+# Копирование директории с сайтом на сервер? исключая все md и
 # и файл template.shtml.
 COPY --exclude=*.md --exclude=template.shtml \
 ./public-html/ /usr/local/apache2/htdocs/
