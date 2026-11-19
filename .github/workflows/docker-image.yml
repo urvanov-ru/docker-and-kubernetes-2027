@@ -16,5 +16,5 @@ jobs:
     - uses: actions/checkout@v4
     - name: Build the Docker image
       run: |
-        cd 02.03.02-dockerfile-example
+        cd 02.05.02-dockerfile-example
         docker build . --file Dockerfile --tag my-image-name:$(date +%s)
